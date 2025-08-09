@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>প্রেমের নাম কার্ড — Gift Card</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ff5c8a;--accent2:#ffd96b}
+    *{box-sizing:border-box}
+    body{margin:0;height:100vh;display:grid;place-items:center;font-family:Poppins,system-ui;background:radial-gradient(1200px 600px at 10% 10%, #071025 0%, var(--bg) 40%), linear-gradient(180deg,#071028 0%, #071028 100%);color:#fff}
+    .wrap{width:min(980px,94vw);display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+    .hero{padding:28px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    h1{margin:0;font-size:28px;font-weight:800;letter-spacing:-0.6px}
+    p{margin:8px 0 18px;color:#c7d2fe88}
+    .controls{display:flex;gap:8px}
+    input[type=text]{flex:1;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;font-size:15px}
+    button{padding:12px 14px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent),#ff8fb1);font-weight:700;cursor:pointer}
+    .small{font-size:13px;color:#cbd5e1cc;margin-top:10px}
+
+    /* card preview */
+    .preview{display:grid;place-items:center}
+    .card{width:380px;height:380px;border-radius:22px;background:linear-gradient(160deg,#071224 0%, #071a30 50%, rgba(255,255,255,0.02) 100%);padding:22px;position:relative;overflow:hidden;box-shadow:0 12px 40px rgba(2,6,23,0.7)}
+    .card .title{font-size:15px;font-weight:700;color:#cbd5e1;margin-bottom:8px}
+    .card .name{font-size:44px;font-weight:800;letter-spacing:-1px;margin:0}
+    .card .subtitle{margin-top:8px;color:#b6d3ff88}
+
+    /* floating hearts */
+    .heart{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+    .heart i{position:absolute;opacity:0.95}
+    @keyframes floatUp{0%{transform:translateY(0) scale(0.9);opacity:0}10%{opacity:1}100%{transform:translateY(-380px) scale(1.2);opacity:0}}
+    .heart i{animation:floatUp 3.6s linear infinite}
+    .heart i:nth-child(1){left:20%;animation-delay:0s;font-size:18px;color:var(--accent)}
+    .heart i:nth-child(2){left:40%;animation-delay:0.5s;font-size:26px;color:var(--accent2)}
+    .heart i:nth-child(3){left:70%;animation-delay:1s;font-size:14px;color:var(--accent)}
+    .heart i:nth-child(4){left:85%;animation-delay:1.3s;font-size:20px;color:var(--accent2)}
+    .sparkles{position:absolute;right:-40px;top:-30px;width:260px;height:260px;filter:blur(8px);opacity:0.25;background:conic-gradient(from 30deg,#ffb3c9, #ffd98a, #9be7ff, #d0b9ff);transform:rotate(25deg)}
+
+    /* share / download */
+    .actions{display:flex;gap:8px;margin-top:14px}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:12px;color:#cbd5e1;cursor:pointer}
+
+    footer{grid-column:1/-1;margin-top:12px;color:#8b9bbf66;font-size:13px}
+    @media (max-width:880px){.wrap{grid-template-columns:1fr;}.preview{order:-1}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>প্রেমের নাম কার্ড তৈরি করুন</h1>
+      <p>আপনার প্রেমিকার নাম লিখুন, তারপর "Create" চাপুন — একটি সুন্দর অ্যানিমেটেড কার্ড তৈরি হয়ে যাবে। এটি আপনি স্ক্রীনশট করে উপহার দিতে পারবেন।</p>
+      <div class="controls">
+        <input id="nameInput" type="text" placeholder="প্রেমিকার নাম (উদাহরণ: Jannat)" maxlength="40">
+        <button id="createBtn">Create</button>
+      </div>
+      <div class="small">চাহিদা থাকলে আমি GitHub-এ এক ক্লিকেই আপলোড করার ধাপও বলবো।</div>
+
+      <div class="actions">
+        <button id="downloadBtn" class="ghost">Download as PNG</button>
+        <button id="shareBtn" class="ghost">Copy message</button>
+      </div>
+
+      <footer>Designed with ❤ — খুলে রাখুন এবং আপনার ফোন থেকে সরাসরি শেয়ার করুন।</footer>
+    </div>
+
+    <div class="preview">
+      <div id="card" class="card" role="img" aria-label="Love card preview">
+        <div class="sparkles"></div>
+        <div style="position:relative;z-index:3">
+          <div class="title">For someone special</div>
+          <h2 class="name" id="cardName">Your Love</h2>
+          <div class="subtitle" id="cardSub">You are my sunshine ✨</div>
+        </div>
+        <div class="heart" aria-hidden="true">
+          <i>❤</i><i>❤</i><i>❤</i><i>❤</i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('nameInput');
+    const btn = document.getElementById('createBtn');
+    const cardName = document.getElementById('cardName');
+    const cardSub = document.getElementById('cardSub');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const cardEl = document.getElementById('card');
+
+    function makePrettyName(name){
+      if(!name) return 'Your Love';
+      // simple titlecase for Bangla/Latin
+      return name.trim().split(/\s+/).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+    }
+
+    btn.addEventListener('click', ()=>{
+      const nm = makePrettyName(input.value);
+      cardName.textContent = nm;
+      cardSub.textContent = `I love you, ${nm} ❤️`;
+      // tiny burst animation
+      cardEl.animate([{transform:'scale(0.98)'},{transform:'scale(1.
